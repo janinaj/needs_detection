@@ -7,15 +7,15 @@ if [ ! -d "autophrase" ]; then
   mv auto_phrase_cmd_args.sh autophrase/auto_phrase_cmd_args.sh
 fi
 
-# run Autophrase
-# cp $1 autophrase/data/input.txt
-# if [ ! -d "../data/autophrase" ]; then
-#   mkdir ../data/autophrase
-# fi
-# cd autophrase
-# ./auto_phrase_cmd_args.sh ../data/autophrase data/input.txt
-# rm data/input.txt
-# cd ..
+run Autophrase
+cp $1 autophrase/data/input.txt
+if [ ! -d "../data/autophrase" ]; then
+  mkdir ../data/autophrase
+fi
+cd autophrase
+./auto_phrase_cmd_args.sh ../data/autophrase data/input.txt
+rm data/input.txt
+cd ..
 
-# annotate phrases
-python annotate_phrases.py data/autophrase/AutoPhrase_multi-words.txt $1 data/phrase-annotated-$1 0.8
+perform priority needs detection
+python priority_detection.py $1 data data/autophrase/AutoPhrase_multi-words.txt

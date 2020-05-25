@@ -2,4 +2,7 @@
 raw_data/
 data/
 autophrase/
+allennlp/
+twitterNER/
+old/
 all.txt
