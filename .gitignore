@@ -4,5 +4,6 @@ data/
 autophrase/
 allennlp/
 twitterNER/
+pyStatParser/
 old/
 all.txt
