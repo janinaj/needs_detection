@@ -3,8 +3,10 @@ from gensim.models import Word2Vec
 from nltk import sent_tokenize
 from nltk import pos_tag
 from nltk.chunk import ne_chunk
+from stat_parser import Parser
 from nltk.tokenize import TweetTokenizer
 from collections import defaultdict
+from spacy.tokens import Doc
 
 # read phrases file
 def read_phrases(PHRASES_FILE):
@@ -65,6 +67,11 @@ def get_nouns(vocab_pos, phrases):
 
     return nouns
 
+def tweet_tokenizer(text):
+    tokens = tokenizer.tokenize(text)
+
+    return Doc(nlp.vocab, tokens)
+
 if __name__=="__main__":
     start_time = time.time()
 
@@ -73,17 +80,20 @@ if __name__=="__main__":
     OUTPUT_FILE = os.path.join(OUTPUT_FOLDER, 'sentences.json')
     NEEDS_FILE = os.path.join(OUTPUT_FOLDER, 'specific-needs.txt')
 
-    PHRASES_FILE = sys.argv[3]
-    PHRASE_THRESHOLD = 0.8
-    MIN_PHRASE_LENGTH = 2
-    MAX_PHRASE_LENGTH = 5
+    # PHRASES_FILE = sys.argv[3]
+    # PHRASE_THRESHOLD = 0.8
+    # MIN_PHRASE_LENGTH = 2
+    # MAX_PHRASE_LENGTH = 5
 
-    if len(sys.argv) < 5:
-        TOPN = 100
+    # if len(sys.argv) < 5:
+    #     TOPN = 100
 
     tokenizer = TweetTokenizer()
 
-    all_phrases, phrase_search = read_phrases(PHRASES_FILE)
+    nlp = spacy.load('en_core_web_sm')
+    nlp.tokenizer = tweet_tokenizer
+
+    # all_phrases, phrase_search = read_phrases(PHRASES_FILE)
 
     print('Initialization took {} seconds'.format((time.time() - start_time)))
 
@@ -93,60 +103,13 @@ if __name__=="__main__":
 
     all_sents = []
     vocab_pos = {}
-    row = 0
     with open(INPUT_FILE, 'r') as f:
         with open(OUTPUT_FILE, 'w') as o:
             for line in f:
                 sentences = sent_tokenize(line)
                 for raw_sent in sentences:
-                    raw_tokens = tokenizer.tokenize(raw_sent)
+                    if 'needs' in raw_sent:
+                        doc = nlp(raw_sent)
 
-                    phrase_sent = annotate_phrases(raw_sent, phrase_search)
-                    phrase_tokens = tokenizer.tokenize(phrase_sent)
-
-                    pos = pos_tag(raw_tokens)
-                    input(ne_chunk(pos))
-                    # chunks = chunk.ne_chuck(pos)
-                    # for chunk in chunks:
-                    #     if type(chunk) is nltk.Tree:
-                    #       t = ''.join(c[0] for c in chunk.leaves())
-                          # entities[t] = chunk.label()
-    #                 json.dump({
-    #                     'raw_sent' : raw_sent,
-    #                     'raw_tokens' : raw_tokens,
-    #                     'phrase_sent' : phrase_sent,
-    #                     'phrase_tokens' : phrase_tokens,
-    #                     'pos' : pos
-    #                     }, o)
-    #                 o.write('\n')
-
-    #                 all_sents.append(phrase_tokens)
-
-    #                 for (word, tag) in pos:
-    #                     if word not in vocab_pos:
-    #                         vocab_pos[word.lower()] = defaultdict(int)
-    #                     vocab_pos[word.lower()][tag] += 1 
-
-    #             row = row + 1
-    #             if row == 2000: break
-
-    # nouns = get_nouns(vocab_pos, all_phrases)
-
-    # print('Tagging took {} seconds'.format((time.time() - tagging_start_time)))
-
-    # # generate word embeddings
-    # print('Generating word embeddings...')
-    # embedding_start_time = time.time()
-
-    # model = Word2Vec(sentences = all_sents)
-    # model.save(os.path.join(OUTPUT_FOLDER, 'word2vec.model'))
-    # print('Embedding took {} seconds'.format((time.time() - embedding_start_time)))
-
-    # print('Identifying needs and priorities...')
-    # detection_start_time = time.time()
-
-    # get_ranked_needs(model, nouns, NEEDS_FILE, TOPN)
-    
-    # print('Needs detection took {} seconds'.format((time.time() - detection_start_time)))
-
-    # print('END: whole process took {} seconds'.format((time.time() - start_time)))
+            
+    print('END: whole process took {} seconds'.format((time.time() - start_time)))

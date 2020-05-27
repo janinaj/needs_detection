@@ -18,7 +18,7 @@ def read_phrases(PHRASES_FILE):
     with open(PHRASES_FILE, 'r') as f:
         for line in f:
             line = line.strip().split('\t')
-            if float(line[0]) >= PHRASE_THRESHOLD:
+            if len(line) > 1 and float(line[0]) >= PHRASE_THRESHOLD:
                 if line[1].endswith("'s"):
                     line[1] = line[1][:-2]
                 
@@ -39,12 +39,13 @@ def read_phrases(PHRASES_FILE):
 def annotate_phrases(raw_sent, phrases):
     phrase_sent = raw_sent.lower()
     for i in range(MAX_PHRASE_LENGTH , MIN_PHRASE_LENGTH - 1, -1):
-        phrases_in_sent = {}
-        for end_index, (phrase, combined_phrase) in phrases[i].iter(phrase_sent):
-            phrases_in_sent[phrase] = combined_phrase
+        if len(phrases[i]) > 0:
+            phrases_in_sent = {}
+            for end_index, (phrase, combined_phrase) in phrases[i].iter(phrase_sent):
+                phrases_in_sent[phrase] = combined_phrase
 
-        for phrase in sorted(phrases_in_sent, key = len, reverse = True):
-            phrase_sent = phrase_sent.replace(phrase, phrases_in_sent[phrase])
+            for phrase in sorted(phrases_in_sent, key = len, reverse = True):
+                phrase_sent = phrase_sent.replace(phrase, phrases_in_sent[phrase])
 
     return phrase_sent
 
