@@ -7,15 +7,15 @@ if [ ! -d "autophrase" ]; then
   mv auto_phrase_cmd_args.sh autophrase/auto_phrase_cmd_args.sh
 fi
 
-if [ ! -d "../{$1}" ]; then
-  mkdir ../$1
-fi
+# if [ ! -d "{$1}" ]; then
+#   mkdir $1
+# fi
 
-run Autophrase
+# run Autophrase
 cp $1.txt autophrase/data/$1.txt
-if [ ! -d "../{$1}/autophrase" ]; then
-  mkdir ../$1/autophrase
-fi
+# if [ ! -d "{$1}/autophrase" ]; then
+#   mkdir $1/autophrase
+# fi
 cd autophrase
 ./auto_phrase_cmd_args.sh ../$1/autophrase data/$1.txt
 rm data/$1.txt
